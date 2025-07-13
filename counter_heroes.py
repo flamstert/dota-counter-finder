@@ -9,7 +9,7 @@ class CounterHero:
         self.matches_played = matches_played
 
     def __str__(self):
-        return f"{self.name.ljust(20)} - Disadvantage: {str(f'{self.disadvantage/100}%').ljust(10)} {self.name} Win Rate: {str(f'{100-self.win_rate/100}%').ljust(30)} Matches Played: {self.matches_played}"
+        return f"{self.name.ljust(20)} - Disadvantage: {str(f'{self.disadvantage/100}%').ljust(10)} {self.name} Win Rate: {str(f'{100-self.win_rate/100}%').ljust(20)} Matches Played: {self.matches_played}"
 
 def get_counter_heroes_names(hero_name):
     hero_name = hero_name.lower().replace(' ', '-')

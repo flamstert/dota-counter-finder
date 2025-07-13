@@ -12,7 +12,7 @@ class Hero:
 
 def get_role_name_encoded(name):
     match name.lower():
-        case 'safe':
+        case 'safe' | 'carry' | 'core':
             return 'core-safe'
         case 'mid':
             return 'core-mid'
@@ -23,11 +23,14 @@ def get_role_name_encoded(name):
         case 'hard support':
             return 'support-safe'
         case _:
+            print(f"Unknown role: {name}")
+            print("Please enter a valid role: safe, mid, offlane, support, hard support.")
+            exit()
             return name
 
 user_agent = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'}
 def get_heroes_data(role):
-    url = f"https://www.dotabuff.com/heroes?show=heroes&view=winning&mode=all-pick&date=7.39&rankTier=guardian&position={get_role_name_encoded(role)}"
+    url = f"https://www.dotabuff.com/heroes?show=heroes&view=winning&mode=all-pick&date=1m&rankTier=&position={get_role_name_encoded(role)}"
 
     response = requests.get(url, headers=user_agent)
     soup = BeautifulSoup(response.content, 'html.parser')
@@ -41,4 +44,4 @@ def get_heroes_data(role):
         heroes.append(Hero(hero_name, hero_win_rate, hero_pick_rate))
     
     heroes.sort(key=lambda x: x.pick_rate, reverse=True)
-    return heroes[:20]
+    return [i for i in heroes if i.pick_rate > 1000]
