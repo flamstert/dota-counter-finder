@@ -1,5 +1,7 @@
 from bs4 import BeautifulSoup
-import requests
+from curl_cffi import requests
+import time
+import random
 
 class Hero:
     def __init__(self, name, win_rate, pick_rate):
@@ -28,11 +30,11 @@ def get_role_name_encoded(name):
             exit()
             return name
 
-user_agent = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'}
 def get_heroes_data(role):
+    time.sleep(random.uniform(3, 7))
     url = f"https://www.dotabuff.com/heroes?show=heroes&view=winning&mode=all-pick&date=1m&rankTier=&position={get_role_name_encoded(role)}"
 
-    response = requests.get(url, headers=user_agent)
+    response = requests.get(url, impersonate='chrome110', timeout=10)
     soup = BeautifulSoup(response.content, 'html.parser')
 
     page = soup.find_all(class_='tw-border-b tw-transition-colors hover:tw-bg-muted/50 data-[state=selected]:tw-bg-muted')
