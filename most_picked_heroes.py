@@ -1,14 +1,14 @@
 def get_role_name_encoded(name):
     match name.lower():
-        case 'safe' | 'carry' | 'core':
+        case 'safe' | 'carry' | 'core' | 'pos1':
             return 'core-safe'
-        case 'mid':
+        case 'mid' | 'middle' | 'pos2':
             return 'core-mid'
-        case 'offlane':
+        case 'offlane' | 'off' | 'pos3':
             return 'core-off'
-        case 'support':
+        case 'support' | 'soft' | 'pos4':
             return 'support-off'
-        case 'hard support':
+        case 'hard support' | 'hard' | 'pos5':
             return 'support-safe'
         case _:
             print(f"Unknown role: {name}")

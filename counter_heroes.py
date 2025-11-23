@@ -1,7 +1,5 @@
 from bs4 import BeautifulSoup
-from curl_cffi import requests
-import time
-import random
+import zendriver as zd
 
 class CounterHero:
     def __init__(self, name, disadvantage, win_rate, matches_played):
@@ -10,25 +8,43 @@ class CounterHero:
         self.win_rate = win_rate
         self.matches_played = matches_played
 
-    def __str__(self):
-        return f"{self.name.ljust(20)} - Disadvantage: {str(f'{self.disadvantage/100}%').ljust(10)} {self.name} Win Rate: {str(f'{100-self.win_rate/100}%').ljust(20)} Matches Played: {self.matches_played}"
-
-def get_counter_heroes_names(hero_name):
-    time.sleep(random.uniform(3, 7))
-    hero_name = hero_name.lower().replace(' ', '-')
-    url = f"https://www.dotabuff.com/heroes/{hero_name}/counters"
-    response = requests.get(url, impersonate='chrome110', timeout=10)
-    soup = BeautifulSoup(response.content, 'html.parser')
-
+async def get_counter_heroes(hero_name):
+    browser = await zd.start()
     counter_heroes = []
-    table = soup.find('table', class_='sortable')
-    for row in table.find_all('tr')[1:]:
-        cols = row.find_all('td')
-        if len(cols) >= 4:
-            hero_name = cols[1].text.strip()
-            disadvantage = int(cols[2].text.replace('%', '').replace('.', ''))
-            win_rate = int(cols[3].text.replace('%', '').replace('.', ''))
-            matches_played = int(cols[4].text.replace(',', ''))
-            counter_heroes.append(CounterHero(hero_name, disadvantage, win_rate, matches_played))
 
+    try:
+        hero_name = hero_name.lower().replace(' ', '-')
+        url = f"https://www.dotabuff.com/heroes/{hero_name}/counters"
+        
+        print(f"Fetching data for {hero_name}...")
+        page = await browser.get(url)
+
+        await page.wait(2)
+        
+        soup = BeautifulSoup(await page.get_content(), 'html.parser')
+
+        table = soup.find('table', class_='sortable')
+        if not table:
+            print("Error: Could not find the data table (Check hero name).")
+            return []
+
+        for row in table.find_all('tr')[1:]:
+            cols = row.find_all('td')
+            if len(cols) >= 4:
+                name = cols[1].text.strip()
+                
+                try:
+                    disadv = float(cols[2].get('data-value', 0))
+                    win_rt = float(cols[3].get('data-value', 0))
+                    matches = int(cols[4].get('data-value', 0).replace(',', ''))
+                    
+                    counter_heroes.append(CounterHero(name, disadv, win_rt, matches))
+                except ValueError:
+                    continue
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+    finally:
+        await browser.stop()
+        
     return counter_heroes
