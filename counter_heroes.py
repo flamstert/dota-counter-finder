@@ -14,7 +14,7 @@ async def get_counter_heroes(hero_name):
 
     try:
         hero_name = hero_name.lower().replace(' ', '-')
-        url = f"https://www.dotabuff.com/heroes/{hero_name}/counters"
+        url = f"https://www.dotabuff.com/heroes/{hero_name}/counters?date=patch_7.40"
         
         print(f"Fetching data for {hero_name}...")
         page = await browser.get(url)
