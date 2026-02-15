@@ -4,7 +4,7 @@ import sys
 from prettytable import PrettyTable
 import asyncio
 
-async def main(hero_name, role):
+async def main(role, hero_name):
     print(f"Best {role} counters for {hero_name}:")
     position_heroes_names = most_picked_heroes.get_position_heroes_names(role)
     counter_heroes_list = await counter_heroes.get_counter_heroes(hero_name)
